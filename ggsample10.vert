@@ -33,7 +33,17 @@ void main(void)
   vec3 l = normalize((pl * p.w - p * pl.w).xyz);    // 光線ベクトル
   vec3 n = normalize((mg * nv).xyz);                // 法線ベクトル
 
-  idiff = max(dot(n, l), 0.0) * kdiff * ldiff;
+
+  // 球面調和解析による拡散反射光強度の計算
+  vec3 e1 = k1 * sh[8] * (n.x * n.x - n.y * n.y);
+  vec3 e2 = k3 * sh[6] * n.z * n.z;
+  vec3 e3 = k4 * sh[0];
+  vec3 e4 = k5 * sh[6];
+  vec3 e5 = 2 * k1 * (sh[4] * n.x * n.y + sh[7] * n.x * n.z + sh[5] * n.y * n.z);
+  vec3 e6 = 2 * k2 * (sh[3] * n.x + sh[1] * n.y + sh[2] * n.z);
+
+  vec3 e =  e1 + e2 + e3 - e4 + e5 + e6;
+  idiff = (kdiff * e);
 
   gl_Position = mc * pv;
 }
